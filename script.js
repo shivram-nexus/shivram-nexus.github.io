@@ -213,56 +213,92 @@ window.addEventListener("load", revealOnScroll);
    5. CONTACT FORM
 ========================================== */
 
-const contactForm =
-    document.getElementById("contactForm");
+/* ==========================================
+   5. CONTACT FORM - EMAILJS
+========================================== */
 
+const contactForm = document.getElementById("contactForm");
 
 if (contactForm) {
+
+    // Initialize EmailJS
+    emailjs.init({
+        publicKey: "YftywD9uD9d7XjcsK"
+    });
 
     contactForm.addEventListener("submit", function (event) {
 
         event.preventDefault();
 
+        const name = document.getElementById("name").value.trim();
+        const email = document.getElementById("email").value.trim();
+        const subject = document.getElementById("subject").value.trim();
+        const message = document.getElementById("message").value.trim();
 
-        const name =
-            document.getElementById("name").value.trim();
-
-        const email =
-            document.getElementById("email").value.trim();
-
-        const message =
-            document.getElementById("message").value.trim();
-
-
-        /* Check empty fields */
-
+        // Check empty fields
         if (
             name === "" ||
             email === "" ||
+            subject === "" ||
             message === ""
         ) {
-
             alert("Please fill in all the fields.");
-
             return;
         }
 
-
-        /* Success message */
-
-        alert(
-            "Thank you " +
-            name +
-            "! Your message has been received."
+        // Disable button while sending
+        const submitButton = contactForm.querySelector(
+            'button[type="submit"]'
         );
 
+        if (submitButton) {
+            submitButton.disabled = true;
+            submitButton.textContent = "Sending...";
+        }
 
-        /* Clear form */
+        // Send email through EmailJS
+        emailjs.send(
+            "ramkrshiv2004@gmail.com",
+            "template_4sfzhll",
+            {
+                name: name,
+                email: email,
+                subject: subject,
+                message: message
+            }
+        )
+        .then(function () {
 
-        contactForm.reset();
+            // Success popup
+            alert(
+                "Thank you " +
+                name +
+                "! Your message has been received."
+            );
 
+            // Clear form
+            contactForm.reset();
+
+        })
+        .catch(function (error) {
+
+            console.error("EmailJS Error:", error);
+
+            alert(
+                "Sorry! Your message could not be sent. Please try again."
+            );
+
+        })
+        .finally(function () {
+
+            // Enable button again
+            if (submitButton) {
+                submitButton.disabled = false;
+                submitButton.textContent = "Send Message";
+            }
+
+        });
     });
-
 }
 
 
